@@ -1,0 +1,100 @@
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.positive {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.negative {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.neutral {
+    color: #6c757d;
+}
+
+.progress {
+    height: 25px;
+    margin-bottom: 10px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.075);
+}
+
+.stat-card {
+    border-left: 4px solid #007bff;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 10px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+    }
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Loading animation */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success message */
+.alert-success {
+    border-left: 4px solid #28a745;
+}
+
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+
+/* Custom scrollbar */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

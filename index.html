@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Pendapatan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4"><i class="fas fa-chart-line me-2"></i>Monitoring Pendapatan</h1>
+            </div>
+        </div>
+
+        <!-- Filter Tanggal -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-filter me-2"></i>Filter Tanggal</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">Tanggal Mulai</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">Tanggal Akhir</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary me-2" onclick="filterManager.applyFilter()">
+                                    <i class="fas fa-search me-1"></i>Terapkan Filter
+                                </button>
+                                <button class="btn btn-secondary" onclick="filterManager.resetFilter()">
+                                    <i class="fas fa-refresh me-1"></i>Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card stat-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-bullseye me-2"></i>Target Bulanan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 id="monthlyProgress">0/450M</h4>
+                                <small class="text-muted">Progress Bulan Ini</small>
+                            </div>
+                            <div class="col-6">
+                                <div class="progress">
+                                    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small id="progressText" class="text-muted">0% Tercapai</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistik Harian -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5><i class="fas fa-money-bill-wave me-2"></i>Hari Ini</h5>
+                        <h3 id="todayIncome">0M</h3>
+                        <small id="todayComparison" class="opacity-75">Bandingkan dengan kemarin</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5><i class="fas fa-calendar-week me-2"></i>Minggu Ini</h5>
+                        <h3 id="weekIncome">0M</h3>
+                        <small id="weekComparison" class="opacity-75">Bandingkan dengan minggu lalu</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5><i class="fas fa-calendar-alt me-2"></i>Bulan Ini</h5>
+                        <h3 id="monthIncome">0M</h3>
+                        <small id="monthComparison" class="opacity-75">Bandingkan dengan bulan lalu</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h5><i class="fas fa-chart-bar me-2"></i>Rata-rata Harian</h5>
+                        <h3 id="averageIncome">0M</h3>
+                        <small class="opacity-75">Target: 15M/hari</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafik -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Grafik Pendapatan 7 Hari Terakhir</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="incomeChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Data -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>Tambah Data Pendapatan</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="incomeForm">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="inputDate" class="form-label">Tanggal</label>
+                                    <input type="date" class="form-control" id="inputDate" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="inputAva" class="form-label">Ava (M)</label>
+                                    <input type="number" class="form-control" id="inputAva" step="0.1" value="5" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="inputSkip" class="form-label">Skip STTC (M)</label>
+                                    <input type="number" class="form-control" id="inputSkip" step="0.1" value="5" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="inputROA" class="form-label">ROA Gather (M)</label>
+                                    <input type="number" class="form-control" id="inputROA" step="0.1" value="5" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputNotes" class="form-label">Catatan</label>
+                                    <textarea class="form-control" id="inputNotes" rows="2" placeholder="Tambahkan catatan..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-1"></i>Simpan Data
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="fas fa-table me-2"></i>Data Pendapatan Harian</h5>
+                        <button class="btn btn-sm btn-success float-end" onclick="exportManager.exportToExcel()">
+                            <i class="fas fa-file-excel me-1"></i>Export Excel
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Ava (M)</th>
+                                        <th>Skip STTC (M)</th>
+                                        <th>ROA Gather (M)</th>
+                                        <th>Total Harian (M)</th>
+                                        <th>Catatan</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incomeTable">
+                                    <!-- Data akan diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
